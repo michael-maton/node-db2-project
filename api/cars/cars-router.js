@@ -1,16 +1,40 @@
 const express = require("express");
 const Cars = require("./cars-model");
-const db = require("../../data/db-config.js");
+// const db = require("../../data/db-config.js");
 
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-  db("cars")
-    .then((cars) => {
-      res.json(cars);
-    })
-    .catch(next);
+router.get("/", async (req, res, next) => {
+  //   db("cars")
+  //     .then((cars) => {
+  //       res.json(cars);
+  //     })
+  //     .catch(next);
+  try {
+    const data = await Cars.get();
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
 });
+
+router.get('/:id', async (req, res, next) => {
+    try {
+      const data = await Cars.getById(req.params.id)
+      res.json(data)
+    } catch (err) {
+      next(err)
+    }
+  })
+  
+  router.post('/', async (req, res, next) => {
+    try {
+      const data = await Cars.insert(req.body)
+      res.json(data)
+    } catch (err) {
+      next(err)
+    }
+  })
 
 router.use((err, req, res, next) => {
   const env = process.env.NODE_ENV || "development";
